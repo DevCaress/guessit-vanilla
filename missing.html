@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Generatort</title>
+
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.3.5/dist/sweetalert2.min.css">
+
+</head>
+<body>
+
+
+<main class="main">
+
+    <section class="ps-games">
+
+        <div class="ps-games__header">
+            <div class="ps-games__header--feedback">
+                <svg style="width: 30px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
+                  </svg>
+                <h3>Feedback</h3>
+            </div>
+            <div class="ps-games__header--title">
+                <h1>What's missing?</h1>
+            </div>
+            <div class="ps-games__header--back">
+                <p>Back</p>
+            </div>
+        </div>
+
+        <div class="ps-games__buttons">
+            <h2>Complete the sequence.</h2>
+            <div class="ps-games__buttons--container">
+                <p onclick="showAnsweres();">Show all Answers</p>
+                <p onclick="playagain();">Play Again</p>
+                <p onclick="newgame();">New Game</p>
+            </div>
+        </div>
+
+        <div class="ps-missing">
+
+            <!-- cards ABCABC-->
+            <div id="contenedor" class="">
+                <!-- Aquí van los divs con las imgs -->
+            </div>
+
+            <!-- Three answers -->
+            <div id="contenedorResp" class="" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <!-- Aquí van los divs de respuesta -->
+            </div>
+
+        </div>
+        
+
+    </section>
+
+</main>
+    
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.3.5/dist/sweetalert2.all.min.js"></script>
+<script>
+    let imgs = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+    let shuffleimgs = shuffle(imgs);
+    let array =[];
+    let array2 =[];
+    let array3 =[];// para la opcion ABABAB
+    let totalarray = [];
+    let arrayresp = [];
+
+    // variables para las opciones de arriba ya sea ABAB o ABABAB o ABCABC
+    let opab = 2
+    let opabc = 3
+
+    let flagopab = true;
+    let flagopabc  = false
+
+    let flagabab = true;
+    let flagababab = false;
+    let flagabcabc = false;
+
+    let max; // se cambia dependiendo el numero de tarjetas ABAB o ABABAB
+    let min;
+    ////////////////////////////
+
+    // variables para las opciones de respuesta
+    let opcion3 = 3;
+    let opcion4 = 4;
+    let opcion5 = 5;
+    let opcion6 = 6;
+
+    let flagopcion3 = true;
+    let flagopcion4 = false;
+    let flagopcion5 = false;
+    let flagopcion6 = false;
+    ///////////////////////////
+
+    var contenedor = document.getElementById('contenedor');
+    var contenedorResp = document.getElementById('contenedorResp');
+
+    let dataIdInt
+    let dataIdResp
+
+
+    // Pintar cuadros /////////////////////////////////////////////////////////////////////////////////////////////////
+    document.addEventListener("DOMContentLoaded", function(){
+        // console.log(shuffleimgs);
+        arrays();
+        // console.log(array);
+        // console.log(array2);
+        // console.log(array3);
+        concatArrays();
+        // console.log(totalarray);
+        crearDivs();
+        agregarInt();
+        crearDivsResp();
+
+    }, false);
+
+
+    // mezcla el array de divs
+    function shuffle(arr) {
+        var i,
+            j,
+            temp;
+        for (i = arr.length - 1; i > 0; i--) {
+            j = Math.floor(Math.random() * (i + 1));
+            temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+        }
+        return arr;    
+    };
+    
+    function arrays() {
+        let tarjetas
+        if (flagopab) {
+            tarjetas = opab;
+        }
+        if (flagopabc) {
+            tarjetas = opabc;
+        } 
+        for (let i = 0; i < tarjetas; i++) {
+            array.push(shuffleimgs[i]);
+            array2.push(shuffleimgs[i]);
+            if (flagababab) {
+                array3.push(shuffleimgs[i]); // opcion ABABAB
+            }
+        }
+    }
+
+    function concatArrays() {
+        if (flagababab) {
+            totalarray = array.concat(array2).concat(array3); // opcion ABABAB
+        } else {
+            totalarray = array.concat(array2);
+        }
+    }
+
+    function crearDivs() {
+        if (flagabab) {
+            contenedor.classList.add("ps-missing--cardsABAB");
+        }
+        if (flagababab) {
+            contenedor.classList.add("ps-missing--cardsABABAB");
+        }
+        if (flagabcabc) {
+            contenedor.classList.add("ps-missing--cardsABCABC");
+        }
+        for (let c = 0; c < totalarray.length; c++) {
+            contenedor.innerHTML += `<div class="card" id="${c+1}" data-id="${totalarray[c]}"></div>`;
+            document.getElementById(c+1).style.backgroundImage = `url('${totalarray[c]}.png')`;
+        }
+    }
+
+    function agregarInt() {
+        if (opab) {
+            min = 1;
+            max = 4;
+        } else {
+            min = 1;
+            max = 6;
+        }
+        a = Math.floor(Math.random() * (max - min + 1)) + min;
+        // console.log(a);
+        // document.getElementById(a).innerHTML = `<img src="guessit.png">`;
+        document.getElementById(a).style.backgroundImage = `url('guessit.png')`;
+        document.getElementById(a).setAttribute("ondrop", "drop(event)");
+        document.getElementById(a).setAttribute("ondragover", "allowDrop(event)");
+        dataIdInt = document.getElementById(a).getAttribute('data-id');
+        // console.log("data id int " + dataIdInt);
+    }
+
+    function crearDivsResp() {
+        let tarjetasresp;
+
+        arrayresp.push(parseInt(dataIdInt));
+        if (flagopcion3) {
+            for(var i = 0; i < imgs.length; i++) {
+                if(!(arrayresp.includes(imgs[i]))){
+                    arrayresp.push(imgs[i]);
+                }
+            }
+            arrayresp = arrayresp.slice(0, 3);
+            tarjetasresp = opcion3;
+            contenedorResp.classList.add("ps-missing--answersthree");
+            // console.log("Opcion 3");
+        }
+
+        if (flagopcion4) {
+            for(var i = 0; i < imgs.length; i++) {
+                if(!(arrayresp.includes(imgs[i]))){
+                    arrayresp.push(imgs[i]);
+                }
+            }
+            arrayresp = arrayresp.slice(0, 4);
+            tarjetasresp = opcion4;
+            contenedorResp.classList.add("ps-missing--answersfour");
+            // console.log("Opcion 4");
+        }
+
+        if (flagopcion5) {
+            for(var i = 0; i < imgs.length; i++) {
+                if(!(arrayresp.includes(imgs[i]))){
+                    arrayresp.push(imgs[i]);
+                }
+            }
+            arrayresp = arrayresp.slice(0, 5);
+            tarjetasresp = opcion5;
+            contenedorResp.classList.add("ps-missing--answersfive");
+            // console.log("Opcion 5");
+        }
+
+        if (flagopcion6) {
+            for(var i = 0; i < imgs.length; i++) {
+                if(!(arrayresp.includes(imgs[i]))){
+                    arrayresp.push(imgs[i]);
+                }
+            }
+            arrayresp = arrayresp.slice(0, 6);
+            tarjetasresp = opcion6;
+            contenedorResp.classList.add("ps-missing--answerssix");
+            // console.log("Opcion 6");
+        }
+        
+        // console.log(arrayresp);
+        shuffle(arrayresp);
+        // console.log(arrayresp);
+
+        for (let c = 0; c < tarjetasresp; c++) {
+            contenedorResp.innerHTML += 
+                `
+                <div id="${arrayresp[c]+20}" class="cardResp">
+                    <svg style="width: 30px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.984 5.984 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.983 3.983 0 00-1.172-2.828 1 1 0 010-1.415z" clip-rule="evenodd" />
+                    </svg>
+                    <img src="${arrayresp[c]}.png" 
+                        id="${c+10}" 
+                        data-id="${arrayresp[c]}"  
+                        draggable="true" 
+                        ondragstart="drag(event)">
+                </div>
+                `;
+        }
+    }
+
+    function allowDrop(ev) {
+            ev.preventDefault();
+        }
+
+    function drag(ev) {
+        ev.dataTransfer.setData("text", ev.target.id);
+        targetId = ev.target.id;
+    }
+
+    function drop(ev) {
+        ev.preventDefault();
+        var data = ev.dataTransfer.getData("text");
+        ev.target.appendChild(document.getElementById(data));
+        // console.log(data);
+        testing(data);
+    }
+    
+
+    function testing(data){
+        // console.log("data id int " + dataIdInt);
+        dataIdResp = document.getElementById(data).getAttribute('data-id');
+        // console.log("data id resp " + dataIdResp);
+        // console.log("target id " + targetId);
+        if(dataIdInt === dataIdResp){
+            Swal.fire({
+                icon: 'success',
+                title: 'FELICIDADES',
+                text: 'Lo lograste'
+            })
+            document.getElementById(a).style.backgroundImage = ``;
+            document.getElementById(a).style.border = "1px solid #16E328";
+            document.getElementById(a).style.backgroundColor = "aquamarine";
+        }else{
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Vuelve a intentarlo.'
+            })
+            document.getElementById(a).innerHTML = "";
+            let createdataIdResp = parseInt(dataIdResp) + 20;
+            // console.log(createdataIdResp)
+            document.getElementById(createdataIdResp).innerHTML = 
+                `
+                <svg style="width: 30px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.984 5.984 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.983 3.983 0 00-1.172-2.828 1 1 0 010-1.415z" clip-rule="evenodd" />
+                </svg>
+                <img src="${dataIdResp}.png" 
+                    id="${targetId}" 
+                    data-id="${dataIdResp}"  
+                    draggable="true" 
+                    ondragstart="drag(event)">
+                `;
+        }
+    }
+
+    function showAnsweres() {
+        console.log(a)
+        console.log(parseInt(dataIdInt))
+        document.getElementById(a).style.backgroundImage = `url('${dataIdInt}.png')`;
+        document.getElementById(a).style.border = "1px solid #16E328";
+        document.getElementById(a).style.backgroundColor = "aquamarine";
+        document.getElementById(parseInt(dataIdInt) + 20).style.border = "1px solid #16E328";
+        document.getElementById(parseInt(dataIdInt) + 20).style.backgroundColor = "aquamarine";
+    }
+
+    function playagain() {
+        contenedor.innerHTML = "";
+        contenedorResp.innerHTML = "";
+        array2 =[];
+        array3 =[];// para la opcion ABABAB
+        totalarray = [];
+        shuffle(array);
+        for (let i = 0; i < array.length; i++) {;
+            array2.push(array[i]);
+            if (flagababab) {
+                array3.push(array[i]); // opcion ABABAB
+            }
+        }
+        concatArrays();
+        crearDivs();
+        agregarInt();
+        crearDivsResp();
+    }
+
+    function newgame() {
+        timerNuevoJuego();
+        contenedor.innerHTML = "";
+        contenedorResp.innerHTML = "";
+        array =[];
+        array2 =[];
+        array3 =[];// para la opcion ABABAB
+        totalarray = [];
+        arrayresp = [];
+        shuffle(imgs);
+
+        arrays();
+        concatArrays();
+        crearDivs();
+        agregarInt();
+        crearDivsResp();
+    }
+
+    function timerNuevoJuego() {
+        let timerInterval
+            Swal.fire({
+            title: 'Nuevo Juego',
+            html: 'El juego esta por comenzar.',
+            timer: 1000,
+            timerProgressBar: true,
+            willOpen: () => {
+                Swal.showLoading()
+                timerInterval = setInterval(() => {
+                const content = Swal.getContent()
+                if (content) {
+                    const b = content.querySelector('b')
+                    if (b) {
+                    b.textContent = Swal.getTimerLeft()
+                    }
+                }
+                }, 100)
+            },
+            onClose: () => {
+                clearInterval(timerInterval)
+            }
+            }).then((result) => {
+            /* Read more about handling dismissals below */
+            if (result.dismiss === Swal.DismissReason.timer) {
+                console.log('I was closed by the timer')
+            }
+            })
+    }
+    
+
+</script>
+
+</body>
+</html>
